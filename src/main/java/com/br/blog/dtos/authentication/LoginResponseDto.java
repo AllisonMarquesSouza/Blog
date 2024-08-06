@@ -1,4 +1,4 @@
-package com.br.blog.dtos;
+package com.br.blog.dtos.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

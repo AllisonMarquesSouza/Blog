@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.br.blog.model.Usuario;
+import com.br.blog.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class TokenService {
     @Value("${JWT_SECRET}")
     private String secret;
 
-    public String generateToken(Usuario userModel){
+    public String generateToken(User userModel){
 
         try {
 
@@ -39,7 +39,6 @@ public class TokenService {
         }
     }
 
-    //Validating token
     public String validateToken(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -49,7 +48,7 @@ public class TokenService {
                     .withIssuer("auth")
                     .build()
                     .verify(token)
-                    .getSubject();//In this case , is the username. Because i have
+                    .getSubject();//In this case , is the username. Because I defined it
         }
 
         catch (JWTVerificationException exception) {
@@ -57,7 +56,6 @@ public class TokenService {
         }
     }
 
-    //Time that was defined to expiration token
     private Instant getExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }

@@ -1,4 +1,4 @@
-package com.br.blog.dtos;
+package com.br.blog.dtos.authentication;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
