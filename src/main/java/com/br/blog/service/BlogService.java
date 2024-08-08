@@ -25,9 +25,16 @@ public class BlogService {
     private final UserRepository userRepository;
     private final AuthorizationService authService;
 
-    public List<BlogResponseDto> findAll() {
+    public List<BlogResponseDto> findAllPost() {
+        return blogRepository.findAllPosts();
+    }
+    public List<Blog> findAllMyPosts() {
         String usernameToUser = authService.getCurrentUser().getUsername();
-        return blogRepository.findAllByUserSpecif(usernameToUser);
+        return blogRepository.findAllMyPosts(usernameToUser);
+    }
+
+    public List<BlogResponseDto> findByTitleOrAuthor(String title, String author) {
+        return blogRepository.findByTitleOrAuthor(title, author);
     }
     public Blog findById(Long id) {
         return blogRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Blog not found, check the id"));

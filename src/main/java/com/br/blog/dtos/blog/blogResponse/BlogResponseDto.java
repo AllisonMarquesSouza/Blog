@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class BlogResponseDto {
-    private Long id;
+    private String author;
     private String title;
     private String content;
     private LocalDateTime created_at;
