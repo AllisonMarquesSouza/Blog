@@ -1,23 +1,20 @@
 package com.br.blog.model;
 import com.br.blog.enums.UserRole;
+import com.br.blog.exception.personalizedExceptions.BadRequestException;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "user")
 @NoArgsConstructor
-@Getter
-@ToString
-@EqualsAndHashCode
+@Data
 public class User implements UserDetails {
 
     @Id
@@ -38,13 +35,18 @@ public class User implements UserDetails {
     private UserRole role;
 
     public User(String username, String password, String email, UserRole role) {
+        verificationEmail(email);
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
     }
+    public void verificationEmail(String email) {
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z]{2,})+$");
+        Matcher matcher = pattern.matcher(email);
+        if (!matcher.matches()) throw new BadRequestException("Email not valid, check it");
+    }
 
-    //Giving authorities
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UserRole.ADMIN) {
