@@ -4,6 +4,7 @@ package com.br.blog.service;
 import com.br.blog.dtos.blog.BlogDtoPost;
 import com.br.blog.dtos.blog.BlogDtoPut;
 import com.br.blog.dtos.blog.blogResponse.BlogResponseDto;
+import com.br.blog.exception.personalizedExceptions.BadRequestException;
 import com.br.blog.model.Blog;
 import com.br.blog.model.User;
 import com.br.blog.repository.BlogRepository;
@@ -11,7 +12,6 @@ import com.br.blog.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +28,7 @@ public class BlogService {
     public List<BlogResponseDto> findAllPost() {
         return blogRepository.findAllPosts();
     }
+
     public List<Blog> findAllMyPosts() {
         String usernameToUser = authService.getCurrentUser().getUsername();
         return blogRepository.findAllMyPosts(usernameToUser);
@@ -36,6 +37,7 @@ public class BlogService {
     public List<BlogResponseDto> findByTitleOrAuthor(String title, String author) {
         return blogRepository.findByTitleOrAuthor(title, author);
     }
+
     public Blog findById(Long id) {
         return blogRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Blog not found, check the id"));
     }
@@ -59,7 +61,7 @@ public class BlogService {
             blogRepository.save(blogToSave);
             return;
         }
-        throw new AccessDeniedException("Update failed, check your login and if you have a blog with ID " + blogDtoPut.getId());
+        throw new BadRequestException("Update failed, check your login and if you have a blog with ID " + blogDtoPut.getId());
     }
 
     @Transactional
@@ -71,6 +73,6 @@ public class BlogService {
             blogRepository.delete(blogToDelete);
             return;
         }
-        throw new AccessDeniedException("Delete failed, check your login and if you have a blog with ID " + id);
+        throw new BadRequestException("Delete failed, check your login and if you have a blog with ID " + id);
     }
 }
