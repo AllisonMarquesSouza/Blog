@@ -4,14 +4,14 @@ import com.br.blog.dtos.authentication.AuthenticationDto;
 import com.br.blog.dtos.authentication.LoginResponseDto;
 import com.br.blog.dtos.authentication.RegisterDto;
 import com.br.blog.enums.UserRole;
+import com.br.blog.exception.personalizedExceptions.BadRequestException;
+import com.br.blog.exception.personalizedExceptions.ResourceAlreadyExistsException;
 import com.br.blog.model.User;
 import com.br.blog.repository.UserRepository;
 import com.br.blog.security.TokenService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,47 +21,42 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class AuthorizationService implements UserDetailsService {
     private final ApplicationContext context;
     private final UserRepository userRepository;
     private  final TokenService tokenService;
-
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username);
     }
 
-    public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDto data){
+    public LoginResponseDto login(AuthenticationDto data){
         AuthenticationManager authenticationManager = context.getBean(AuthenticationManager.class);
-
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.getUsername(), data.getPassword());
-        var auth = authenticationManager.authenticate(usernamePassword);
-
-        if(auth.isAuthenticated()){
+        try {
+            var usernamePassword = new UsernamePasswordAuthenticationToken(data.getUsername(), data.getPassword());
+            var auth = authenticationManager.authenticate(usernamePassword);
             var token = tokenService.generateToken((User) auth.getPrincipal());
-            return ResponseEntity.ok(new LoginResponseDto(token));
+            return new LoginResponseDto(token);
+        } catch (Exception e) {
+            throw new BadRequestException("Don't possible to make login , check your username and password");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
     }
 
-
-    public ResponseEntity<?> register (@RequestBody RegisterDto registerDto){
-        String message = "Error check email or username";
+    @Transactional
+    public User register (RegisterDto registerDto){
         if (this.userRepository.findByUsername(registerDto.getUsername()) != null || this.userRepository.findByEmail(registerDto.getEmail()) != null){
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+            String message = "Email or username, already exist!";
+            throw new ResourceAlreadyExistsException(message);
         }
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDto.getPassword());
-
         User newUser = new User(registerDto.getUsername(), encryptedPassword, registerDto.getEmail(), UserRole.USER);
-        this.userRepository.save(newUser);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        return this.userRepository.save(newUser);
     }
 
     public UserDetails getCurrentUser() {
