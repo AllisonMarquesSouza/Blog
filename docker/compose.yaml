@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.0.33
+    container_name: mysql-3
+    #    restart: always
+    environment:
+        MYSQL_DATABASE: #database-name
+        MYSQL_ROOT_USERNAME: #database_password
+        MYSQL_ROOT_PASSWORD: #database_password
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - #port of database
+    networks:
+      - name-your-network
+
+
+  app1:
+    image: blog3
+    container_name: blog-3
+    #    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:port-of-database/database-name
+      SPRING_DATASOURCE_USERNAME: #database-username
+      SPRING_DATASOURCE_PASSWORD: #database-password
+    depends_on:
+      - db
+    ports:
+      - #port to init API
+    networks:
+      - name-your-network
+
+
+networks:
+  name-your-network:
+    driver: bridge
+
+volumes:
+  db:
