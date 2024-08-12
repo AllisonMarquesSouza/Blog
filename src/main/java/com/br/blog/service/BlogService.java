@@ -23,7 +23,7 @@ import java.util.List;
 public class BlogService {
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
-    private final AuthorizationService authService;
+    private final AuthenticationService authService;
 
     public List<BlogResponseDto> findAllPost() {
         return blogRepository.findAllPosts();
@@ -44,14 +44,18 @@ public class BlogService {
 
     @Transactional
     public Blog save(BlogDtoPost blogDtoPost) {
-        User user = userRepository.findByUsernameToUSER(authService.getCurrentUser().getUsername());
+        User user = userRepository.findByUsernameToUSER(authService.getCurrentUser().getUsername())
+                .orElseThrow(()-> new EntityNotFoundException("User not found"));
+
         Blog blog = new Blog(blogDtoPost, user);
         return blogRepository.save(blog);
     }
 
     @Transactional
     public void update(BlogDtoPut blogDtoPut) {
-        User user = userRepository.findByUsernameToUSER(authService.getCurrentUser().getUsername());
+        User user = userRepository.findByUsernameToUSER(authService.getCurrentUser().getUsername())
+                .orElseThrow(()-> new EntityNotFoundException("User not found"));
+
         Blog blogToBeUpdate = this.findById(blogDtoPut.getId());
 
         if(user.equals(blogToBeUpdate.getAuthor())) {
@@ -66,7 +70,9 @@ public class BlogService {
 
     @Transactional
     public void delete(Long id) {
-        User user = userRepository.findByUsernameToUSER(authService.getCurrentUser().getUsername());
+        User user = userRepository.findByUsernameToUSER(authService.getCurrentUser().getUsername())
+                .orElseThrow(()-> new EntityNotFoundException("User not found"));
+
         Blog blogCurrentUser = blogRepository.findBlogByAuthorId(user.getId());
         Blog blogToDelete = this.findById(id);
         if(blogToDelete.equals(blogCurrentUser)) {
