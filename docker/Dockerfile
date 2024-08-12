@@ -4,8 +4,8 @@ FROM openjdk:17-jdk-slim as builder
 WORKDIR /usr/local/app
 
 # Copy the Maven build files and source code
-COPY pom.xml ./
-COPY src ./src
+COPY ../pom.xml ./
+COPY ../src ./src
 
 # Install Maven and build the application
 RUN apt-get update && \
