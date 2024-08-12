@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public class RegisterDto {
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The username can't be empty or null")
     private String username;
 
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The password can't be empty or null")
     private String password;
 
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The email can't be empty or null")
     private String email;
 }
 

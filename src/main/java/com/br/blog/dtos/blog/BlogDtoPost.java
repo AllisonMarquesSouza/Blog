@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 public class BlogDtoPost {
 
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The title can't be empty or null")
     private String title;
 
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The content can't be empty or null")
     private String content;
 
 }

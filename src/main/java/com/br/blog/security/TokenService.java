@@ -16,7 +16,7 @@ import java.time.ZoneOffset;
 public class TokenService {
 
     //key to JWT token , set in environment variable
-    @Value("${JWT_SECRET}")
+    @Value("${JWT_SECRET:your-key-specific}")
     private String secret;
 
     public String generateToken(User userModel){

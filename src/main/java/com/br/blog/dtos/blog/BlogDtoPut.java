@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 public class BlogDtoPut {
-    @NotNull(message = "Don't can be null")
+    @NotNull(message = "The id can't be null")
     private Long id;
 
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The title can't be empty or null")
     private String title;
 
-    @NotBlank(message = "Don't can be empty or null")
+    @NotBlank(message = "The content can't be empty or null")
     private String content;
 
 }
