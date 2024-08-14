@@ -10,7 +10,7 @@ services:
     volumes:
       - db:/var/lib/mysql
     ports:
-      - "your-port"
+      - "your-port-database"
     networks:
       - name-your-network
 
@@ -20,7 +20,7 @@ services:
     container_name: blog
     #    restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/your-database-name
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:your-port-database/your-database-name
       SPRING_DATASOURCE_USERNAME: your-database-username
       SPRING_DATASOURCE_PASSWORD: your-database-password
     depends_on:
