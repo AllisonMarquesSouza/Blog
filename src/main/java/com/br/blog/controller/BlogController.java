@@ -41,8 +41,10 @@ public class BlogController {
             @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @GetMapping("search")
-    public ResponseEntity<List<BlogResponseDto>> filterFields(@RequestParam(required = false) String title, @RequestParam(required = false) String author){
-        return ResponseEntity.ok(blogService.findByTitleOrAuthor(title, author));
+    public ResponseEntity<List<BlogResponseDto>> filterFields(@RequestParam(required = false) String title,
+                                                              @RequestParam(required = false) String author,
+                                                              @RequestParam(required = false) String content){
+        return ResponseEntity.ok(blogService.findByTitleOrAuthorOrDateCreated(title, author, content));
     }
 
     @Operation(summary =  "create", method = "POST", description ="Create a blog", responses = {

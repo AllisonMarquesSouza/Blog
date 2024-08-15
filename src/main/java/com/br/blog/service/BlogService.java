@@ -34,13 +34,16 @@ public class BlogService {
         return blogRepository.findAllMyPosts(usernameToUser);
     }
 
-    public List<BlogResponseDto> findByTitleOrAuthor(String title, String author) {
-        return blogRepository.findByTitleOrAuthor(title, author);
+    public List<BlogResponseDto> findByTitleOrAuthorOrDateCreated(String title, String author, String content ) {
+        return blogRepository.FilterByAuthorOrTitleOrContent(title, author, content);
     }
 
     public Blog findById(Long id) {
         return blogRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Blog not found, check the id"));
     }
+//    public Blog findByCreatedDate(LocalDateTime date){
+//        return blogRepository.findByCreated
+//    }
 
     @Transactional
     public Blog save(BlogDtoPost blogDtoPost) {

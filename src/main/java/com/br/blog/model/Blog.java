@@ -3,6 +3,8 @@ package com.br.blog.model;
 import com.br.blog.dtos.blog.BlogDtoPost;
 import com.br.blog.dtos.blog.BlogDtoPut;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "blog_post")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

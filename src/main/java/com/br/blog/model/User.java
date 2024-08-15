@@ -11,10 +11,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
 @Entity
-@Table(name = "user")
+@Table(name = "blog_user")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class User implements UserDetails {
 
     @Id
