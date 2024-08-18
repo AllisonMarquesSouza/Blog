@@ -2,7 +2,6 @@ package com.br.blog.controller;
 
 import com.br.blog.dtos.blog.BlogDtoPost;
 import com.br.blog.dtos.blog.BlogDtoPut;
-import com.br.blog.dtos.blog.blogResponse.BlogResponseDto;
 import com.br.blog.model.Blog;
 import com.br.blog.service.BlogService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +24,7 @@ public class BlogController {
             @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @GetMapping("listAll")
-    public ResponseEntity<List<BlogResponseDto>> findAll() {
+    public ResponseEntity<List<Blog>> findAll() {
         return ResponseEntity.ok(blogService.findAllPost());
     }
 
@@ -41,7 +40,7 @@ public class BlogController {
             @ApiResponse(responseCode = "200", description = "successful operation")
     })
     @GetMapping("search")
-    public ResponseEntity<List<BlogResponseDto>> filterFields(@RequestParam(required = false) String title,
+    public ResponseEntity<List<Blog>> filterFields(@RequestParam(required = false) String title,
                                                               @RequestParam(required = false) String author,
                                                               @RequestParam(required = false) String content){
         return ResponseEntity.ok(blogService.findByTitleOrAuthorOrDateCreated(title, author, content));

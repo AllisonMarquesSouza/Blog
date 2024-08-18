@@ -7,7 +7,7 @@ CREATE TABLE blog_post(
     updated_at DATETIME,
 
     CONSTRAINT FkUserID FOREIGN KEY (author_id)
-    REFERENCES user(id)
+    REFERENCES blog_user(id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

@@ -3,7 +3,6 @@ package com.br.blog.service;
 
 import com.br.blog.dtos.blog.BlogDtoPost;
 import com.br.blog.dtos.blog.BlogDtoPut;
-import com.br.blog.dtos.blog.blogResponse.BlogResponseDto;
 import com.br.blog.exception.personalizedExceptions.BadRequestException;
 import com.br.blog.model.Blog;
 import com.br.blog.model.User;
@@ -25,25 +24,31 @@ public class BlogService {
     private final UserRepository userRepository;
     private final AuthenticationService authService;
 
-    public List<BlogResponseDto> findAllPost() {
-        return blogRepository.findAllPosts();
+    public List<Blog> findAllPost() {
+        return blogRepository.findAll();
     }
 
     public List<Blog> findAllMyPosts() {
         String usernameToUser = authService.getCurrentUser().getUsername();
-        return blogRepository.findAllMyPosts(usernameToUser);
+        List<Blog> allMyPosts = blogRepository.findAllMyPosts(usernameToUser);
+
+        if(allMyPosts.isEmpty()){
+            throw new BadRequestException("You haven't posts ");
+        }
+        return allMyPosts;
     }
 
-    public List<BlogResponseDto> findByTitleOrAuthorOrDateCreated(String title, String author, String content ) {
-        return blogRepository.FilterByAuthorOrTitleOrContent(title, author, content);
+    public List<Blog> findByTitleOrAuthorOrDateCreated(String title, String author, String content ) {
+        List<Blog> blogFiltered = blogRepository.filterByAuthorOrTitleOrContent(title, author, content);
+        if(blogFiltered.isEmpty()){
+            throw new BadRequestException("There aren't any posts with the filters");
+        }
+        return blogFiltered;
     }
 
     public Blog findById(Long id) {
         return blogRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Blog not found, check the id"));
     }
-//    public Blog findByCreatedDate(LocalDateTime date){
-//        return blogRepository.findByCreated
-//    }
 
     @Transactional
     public Blog save(BlogDtoPost blogDtoPost) {
@@ -79,7 +84,7 @@ public class BlogService {
         Blog blogCurrentUser = blogRepository.findBlogByAuthorId(user.getId());
         Blog blogToDelete = this.findById(id);
         if(blogToDelete.equals(blogCurrentUser)) {
-            blogRepository.delete(blogToDelete);
+            blogRepository.deleteById(id);
             return;
         }
         throw new BadRequestException("Delete failed, check your login and if you have a blog with ID " + id);

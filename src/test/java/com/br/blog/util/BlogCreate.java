@@ -1,5 +1,7 @@
 package com.br.blog.util;
 
+import com.br.blog.dtos.blog.BlogDtoPost;
+import com.br.blog.dtos.blog.BlogDtoPut;
 import com.br.blog.model.Blog;
 
 import java.time.LocalDateTime;
@@ -10,9 +12,9 @@ public class BlogCreate {
         return Blog.builder()
                 .id(1L)
                 .title("Today")
-                .content("Today I'm guessing very hot, because the temperature is 38 Celsius")
+                .content("Today is very hot")
                 .author(UserCreate.createUser1())
-                .created_at(LocalDateTime.now())
+                .created_at(LocalDateTime.of(2024, 8, 15, 10, 0))
                 .build();
     }
 
@@ -22,7 +24,7 @@ public class BlogCreate {
                 .title("Java")
                 .content("Java is very good , because it to give many option to management the code")
                 .author(UserCreate.createUser2())
-                .created_at(LocalDateTime.now())
+                .created_at(LocalDateTime.of(2024, 5, 10, 16, 0))
                 .build();
     }
 }
