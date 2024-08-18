@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -28,7 +29,7 @@ class UserRepositoryTest {
 
         User userFound = userRepository.findByUsernameToUSER(user1.getUsername()).orElseThrow();
 
-        assertThat(userFound).isNotNull();
-        assertThat(userFound).isEqualTo(user1);
+        assertNotNull(userFound);
+        assertEquals(userFound, user1);
     }
 }
