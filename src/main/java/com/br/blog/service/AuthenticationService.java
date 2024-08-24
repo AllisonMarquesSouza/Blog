@@ -49,6 +49,8 @@ public class AuthenticationService implements UserDetailsService {
             throw new BadRequestException("Don't possible to make login , check your username and password");
         }
     }
+
+    @Transactional
     public void changePassword(ChangePasswordDto data){
         User userFound = userRepository.findByUsernameToUSER(data.getUsername())
                 .orElseThrow(()-> new EntityNotFoundException("Username not found"));

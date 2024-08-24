@@ -1,7 +1,5 @@
 package com.br.blog.util;
 
-import com.br.blog.dtos.blog.BlogDtoPost;
-import com.br.blog.dtos.blog.BlogDtoPut;
 import com.br.blog.model.Blog;
 
 import java.time.LocalDateTime;

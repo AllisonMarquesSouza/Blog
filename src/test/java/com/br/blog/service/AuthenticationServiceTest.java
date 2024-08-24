@@ -11,8 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(SpringExtension.class)
 class AuthenticationServiceTest {
     @Mock
@@ -25,7 +23,7 @@ class AuthenticationServiceTest {
     private TokenService tokenService;
 
     @Mock
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -35,6 +33,7 @@ class AuthenticationServiceTest {
     void setUp() {
 
     }
+
     @Test
     void login() {
 
