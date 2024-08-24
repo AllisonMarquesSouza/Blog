@@ -189,10 +189,10 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should throw BadRequestException when update failed ")
     void updateCaseError() {
-        Blog blogExpected = BlogCreate.createBlogUser1();
+        Blog existingBlog = BlogCreate.createBlogUser1();
         BlogDtoPut blogPutDto = new BlogDtoPut(1L,"Today", "Today I'm thinking very hot");
 
-        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(blogExpected));
+        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(existingBlog));
         Mockito.when(blogRepository.save(Mockito.any(Blog.class)))
                 .thenThrow(new BadRequestException("Update failed"));
 
