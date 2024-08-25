@@ -2,13 +2,12 @@ package com.br.blog.service;
 
 import com.br.blog.dtos.blog.BlogDtoPost;
 import com.br.blog.dtos.blog.BlogDtoPut;
+import com.br.blog.enums.UserRole;
 import com.br.blog.exception.personalizedExceptions.BadRequestException;
 import com.br.blog.model.Blog;
 import com.br.blog.model.User;
 import com.br.blog.repository.BlogRepository;
 import com.br.blog.repository.UserRepository;
-import com.br.blog.util.BlogCreate;
-import com.br.blog.util.UserCreate;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +41,13 @@ class BlogServiceTest {
     @InjectMocks
     private BlogService blogService;
 
+    private User user;
+    private Blog existingBlog;
+
     @BeforeEach
     void setUp() {
-        User user = UserCreate.createUser1();
+        user = new User(1L, "allison", "123456", "allison@email.com", UserRole.USER);
+        existingBlog = new Blog(1L,  user, "Today", "Today is very hot", LocalDateTime.now().plusHours(2), null);
         Mockito.when(userRepository.findByUsernameToUSER("allison")).thenReturn(Optional.of(user));
         Mockito.when(authService.getCurrentUser()).thenReturn(user);
     }
@@ -53,31 +56,25 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should find all blogs when is successful")
     void findAllPost() {
-        Blog blogExpected1 = BlogCreate.createBlogUser1();
-        Blog blogExpected2 = BlogCreate.createBlogUser2();
-
         Mockito.when(blogRepository.findAll())
-                .thenReturn(List.of(blogExpected1, blogExpected2));
+                .thenReturn(List.of(existingBlog));
 
         List<Blog> allPosts = blogService.findAllPost();
 
-        assertEquals(allPosts.size(), 2);
-        assertEquals(allPosts.get(0), blogExpected1);
-        assertEquals(allPosts.get(1), blogExpected2);
+        assertEquals(allPosts.size(), 1);
+        assertEquals(allPosts.get(0), existingBlog);
     }
 
     @Test
     @DisplayName("Should find all blogs by User current When is successful")
     void findAllMyPosts() {
-        Blog blogExpected = BlogCreate.createBlogUser1();
-
         Mockito.when(blogRepository.findAllMyPosts("allison"))
-                .thenReturn(List.of(blogExpected));
+                .thenReturn(List.of(existingBlog));
 
         List<Blog> allMyPosts = blogService.findAllMyPosts();
 
         assertEquals(allMyPosts.size(), 1);
-        assertEquals(allMyPosts.get(0), blogExpected);
+        assertEquals(allMyPosts.get(0), existingBlog);
     }
     @Test
     @DisplayName("Should throw BadRequestException when find all Blog isn't found ")
@@ -97,16 +94,15 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should filter Blog By Author , Title or Content , when is successful")
     void findByTitleOrAuthorOrDateCreated() {
-        Blog blogExpected = BlogCreate.createBlogUser1();
 
         Mockito.when(blogRepository.filterByAuthorOrTitleOrContent("Today", "allison", "Today is very hot"))
-                .thenReturn(List.of(blogExpected));
+                .thenReturn(List.of(existingBlog));
 
         List<Blog> findByFilters = blogService.findByTitleOrAuthorOrDateCreated
                 ("Today", "allison", "Today is very hot");
 
         assertEquals(findByFilters.size(), 1);
-        assertEquals(findByFilters.get(0), blogExpected);
+        assertEquals(findByFilters.get(0), existingBlog);
 
     }
 
@@ -127,14 +123,13 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should find Blog by id when is successful")
     void findById() {
-        Blog blogExpected = BlogCreate.createBlogUser1();
 
-        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(blogExpected));
+        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(existingBlog));
 
         Blog blogFound = blogService.findById(1L);
 
         assertNotNull(blogFound);
-        assertEquals(blogFound, blogExpected);
+        assertEquals(blogFound, existingBlog);
     }
 
     @Test
@@ -153,29 +148,28 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should save a Blog when is successful")
     void save() {
-        Blog blogExpected = BlogCreate.createBlogUser1();
         BlogDtoPost blogDtoPost = new BlogDtoPost("Today" ,"Today is very hot");
 
-        Mockito.when(blogRepository.save(Mockito.any(Blog.class))).thenReturn(blogExpected);
+        Mockito.when(blogRepository.save(Mockito.any(Blog.class))).thenReturn(existingBlog);
 
         Blog blogSaved = blogService.save(blogDtoPost);
 
         assertNotNull(blogSaved);
-        assertEquals(blogSaved, blogExpected);
+        assertEquals(blogSaved, existingBlog);
 
     }
 
     @Test
     @DisplayName("Should update a Blog when is successful")
     void update() {
-        Blog existingBlog = BlogCreate.createBlogUser1();
+        User userUpdated = new User(2L, "thefool", "123456", "thefool@email.com", UserRole.USER);
 
-        Blog updateBlog = new Blog(2L, UserCreate.createUser2(), "new-blog", "Today I'm thinking very hot",
+        Blog updateBlog = new Blog(2L, userUpdated, "new-blog", "Today I'm thinking very hot",
                 LocalDateTime.now(), LocalDateTime.now().plusHours(2));
 
         BlogDtoPut blogPutDto = new BlogDtoPut(2L,"new-blog", "Today I'm thinking very hot");
 
-        Mockito.when(blogRepository.findById(2L)).thenReturn(Optional.of(existingBlog));
+        Mockito.when(blogRepository.findById(2L)).thenReturn(Optional.of(this.existingBlog));
         Mockito.when(blogRepository.save(Mockito.any(Blog.class))).thenReturn(updateBlog);
 
         assertDoesNotThrow(() -> blogService.update(blogPutDto));
@@ -189,10 +183,9 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should throw BadRequestException when update failed ")
     void updateCaseError() {
-        Blog existingBlog = BlogCreate.createBlogUser1();
         BlogDtoPut blogPutDto = new BlogDtoPut(1L,"Today", "Today I'm thinking very hot");
 
-        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(existingBlog));
+        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(this.existingBlog));
         Mockito.when(blogRepository.save(Mockito.any(Blog.class)))
                 .thenThrow(new BadRequestException("Update failed"));
 
@@ -206,10 +199,8 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should delete a Blog by id when is successful")
     void delete() {
-        Blog existingBlog = BlogCreate.createBlogUser1();
-
-        Mockito.when(blogRepository.findBlogByAuthorId(1L)).thenReturn(existingBlog);
-        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(existingBlog));
+        Mockito.when(blogRepository.findBlogByAuthorId(1L)).thenReturn(this.existingBlog);
+        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(this.existingBlog));
 
         assertDoesNotThrow(() -> blogService.delete(1L));
         verify(blogRepository).deleteById(1L);
@@ -218,10 +209,8 @@ class BlogServiceTest {
     @Test
     @DisplayName("Should throw BadRequestException when delete by id failed ")
     void deleteCaseError() {
-        Blog existingBlog = BlogCreate.createBlogUser1();
-
-        Mockito.when(blogRepository.findBlogByAuthorId(1L)).thenReturn(existingBlog);
-        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(existingBlog));
+        Mockito.when(blogRepository.findBlogByAuthorId(1L)).thenReturn(this.existingBlog);
+        Mockito.when(blogRepository.findById(1L)).thenReturn(Optional.of(this.existingBlog));
 
         Mockito.doThrow(new BadRequestException("Delete failed")).when(blogRepository).deleteById(1L);
 
